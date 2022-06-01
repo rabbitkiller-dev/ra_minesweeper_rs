@@ -1,3 +1,37 @@
 html {
-    background: #000;
+    // background: #000;
 }
+
+.gamebox {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.grid_is_mine {
+    background-image: url("./assets/炸弹.svg");
+    background-size: contain;
+}
+
+.grid {
+    width: 26px;
+    height: 26px;
+    border: 1px solid #fff;
+    // color: #fff;
+    // box-shadow: 0.1px #fff;
+    &::after {
+      content: '';
+      position: absolute;
+      left: -1px;
+      top: -1px;
+      width: 26px;
+      height: 26px;
+      border: 1px solid rgb(47, 44, 202);
+      box-sizing: border-box;
+      z-index: 1;
+    }
+    &:hover {
+    //   @include mine_grid_light;
+      z-index: 3;
+    }
+  }

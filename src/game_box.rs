@@ -1,5 +1,5 @@
 pub struct GameBox {
-    width: u32,
-    height: u32,
-    mine_max: u32,
+    pub width: u32,
+    pub height: u32,
+    pub mine_max: u32,
 }
