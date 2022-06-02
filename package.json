@@ -4,7 +4,8 @@
   "description": "A template for starting a Yew.",
   "main": "index.js",
   "scripts": {
-    "start": "cross-env WASM_PACK_PROFILE=dev parcel index.html",
+    "start": "parcel index.html",
+    "restart": "rm -rf target && npm start",
     "build": "parcel build index.html"
   },
   "repository": {
