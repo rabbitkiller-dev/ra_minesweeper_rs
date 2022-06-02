@@ -46,17 +46,29 @@ impl GameBox {
     pub fn open_grid(&mut self, x: u32, y: u32) {
         log::info!("打开格子");
         let is_mine = self.mine_map[y as usize][x as usize];
-        let label = &mut self.label_map[y as usize][x as usize];
         if is_mine == 1 {
+            let label = &mut self.label_map[y as usize][x as usize];
             *label = GridStatus::Mine;
             return;
         }
 
-        *label = GridStatus::Open(0);
+        let mine = self.query_around_mine(x, y);
+        let label = &mut self.label_map[y as usize][x as usize];
+        *label = GridStatus::Open(mine);
 
-        let grids = self.find_x(x, y);
+        // 如果周围有雷，就不能自动打开周围的格子
+        if mine > 0 {
+            return;
+        }
 
-        log::info!("周围的格子: {:?}", grids);
+        let grids = self.query_around_grid(x, y);
+        grids.into_iter().for_each(|(x, y)| {
+            let label = &self.label_map[y as usize][x as usize];
+            // 只打开还没打开过的格子
+            if let GridStatus::None = label {
+                self.open_grid(x, y)
+            }
+        });
     }
 
     pub fn new_game(&mut self) {
@@ -72,23 +84,26 @@ impl GameBox {
         }
     }
 
-    pub fn find_x(&self, x: u32, y: u32) -> Vec<(u32, u32)> {
+    pub fn query_around_grid(&self, x: u32, y: u32) -> Vec<(u32, u32)> {
         let mut grids: Vec<(u32, u32)> = vec![];
 
         let li: [i32; 3] = [-1, 0, 1];
 
         for i in li {
-            if y == 0 {
+            if i == -1 && y == 0 {
                 continue;
             }
-            let ty = (y as i32 + i) as usize;
-            if let Some(line) = self.mine_map.get(ty) {
+            let ty = (y as i32 + i) as u32;
+            if let Some(line) = self.mine_map.get(ty as usize) {
                 for j in li {
-                    if x == 0 {
+                    if j == -1 && x == 0 {
                         continue;
                     }
-                    let tx = (x as i32 + j) as usize;
-                    if let Some(_) = line.get(tx) {
+                    let tx = (x as i32 + j) as u32;
+                    if x == tx && y == ty {
+                        continue;
+                    }
+                    if let Some(_) = line.get(tx as usize) {
                         grids.push((tx as u32, ty as u32));
                     }
                 }
@@ -99,6 +114,17 @@ impl GameBox {
         grids
     }
 
+    pub fn query_around_mine(&self, x: u32, y: u32) -> u32 {
+        let grids = self.query_around_grid(x, y);
+        let mut i = 0;
+        for (x, y) in grids.into_iter() {
+            let is_mine = self.mine_map[y as usize][x as usize];
+            if is_mine == 1 {
+                i += 1;
+            }
+        }
+        i
+    }
     // 生成地雷图
     fn init_mine(&self) -> Vec<Vec<u32>> {
         // 初始化
