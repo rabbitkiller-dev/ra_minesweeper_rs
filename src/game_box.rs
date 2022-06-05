@@ -46,9 +46,9 @@ impl GameBox {
     pub fn open_grid(&mut self, x: u32, y: u32) {
         log::info!("打开格子");
         let is_mine = self.mine_map[y as usize][x as usize];
+        // 点到了地雷, 游戏结束
         if is_mine == 1 {
-            let label = &mut self.label_map[y as usize][x as usize];
-            *label = GridStatus::Mine;
+            self.game_over(x, y);
             return;
         }
 
@@ -81,6 +81,34 @@ impl GameBox {
                 line.push(GridStatus::None);
             }
             self.label_map.push(line);
+        }
+    }
+
+    fn game_over(&mut self, x: u32, y: u32) {
+        let label = &mut self.label_map[y as usize][x as usize];
+        *label = GridStatus::OpenMine;
+        self.status = GameStatus::Over;
+
+        // 初始化显示地址
+        for y in 0..self.height {
+            for x in 0..self.width {
+                let label = &mut self.label_map[y as usize][x as usize];
+                match label {
+                    GridStatus::None => {
+                        let is_mine = self.mine_map[y as usize][x as usize];
+                        // 点到了地雷, 游戏结束
+                        if is_mine == 1 {
+                            self.label_map[y as usize][x as usize] = GridStatus::Mine;
+                        }
+                        let mine = self.query_around_mine(x, y);
+                        self.label_map[y as usize][x as usize] = GridStatus::Open(mine);
+
+                    },
+                    GridStatus::Mine => {},
+                    GridStatus::OpenMine => {},
+                    GridStatus::Open(_) => {},
+                }
+            }
         }
     }
 

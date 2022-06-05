@@ -52,8 +52,12 @@ impl Component for MineGrid {
             GameStatus::Play => {
                 self.view_in_play(ctx)
             },
-            GameStatus::Win => todo!(),
-            GameStatus::Over => todo!(),
+            GameStatus::Win => {
+                self.view_in_play(ctx)
+            },
+            GameStatus::Over => {
+                self.view_in_play(ctx)
+            },
         }
     }
 }
@@ -95,5 +99,40 @@ impl MineGrid {
             </div>
         }
 
+    }
+    fn view_in_over(&self, ctx: &Context<Self>) -> Html {
+        let props = ctx.props();
+        let game_box = props.game_box.borrow();
+        // key
+        let key = format!("({},{})", props.x, props.y);
+        // log::info!("{key}");
+        let top = props.y * 25;
+        let left = props.x * 25;
+        let styles = format!("position: absolute;top: {}px;left: {}px;", top, left);
+        let mut class = classes!("grid");
+        let label = &game_box.label_map[props.y as usize][props.x as usize];
+
+        match label {
+            GridStatus::None => {
+            },
+            GridStatus::Mine  => {
+                class.push("grid_is_mine");
+            },
+            GridStatus::OpenMine => {
+                class.push("grid_is_mine");
+            },
+            GridStatus::Open(num) => {
+            },
+        };
+        html! {
+            <div class={class}
+                style={styles}
+                onclick={ctx.link().callback(|_| MineGridMessage::Click)}
+            >
+            if let GridStatus::Open(num) = label {
+                { num }
+            }
+            </div>
+        }
     }
 }
