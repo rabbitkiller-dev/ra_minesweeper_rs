@@ -31,6 +31,7 @@ fn main3() {
     s2.borrow_mut().push_str(", on yeah!");
 
     println!("{:?}\n{:?}\n{:?}", s, s1, s2);
+
 }
 
 fn main2() {

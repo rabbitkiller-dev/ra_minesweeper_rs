@@ -1,3 +1,5 @@
+use std::vec;
+
 use rand::Rng;
 use yew::prelude::*;
 use yew::{html, virtual_dom::VNode, Html};
@@ -44,12 +46,37 @@ impl GameBox {
     }
 
     pub fn open_grid(&mut self, x: u32, y: u32) {
+        if self.is_flag(x, y) {
+            return;
+        }
         log::info!("打开格子");
-        let is_mine = self.mine_map[y as usize][x as usize];
         // 点到了地雷, 游戏结束
-        if is_mine == 1 {
+        if self.is_mine(x, y) {
             self.game_over(x, y);
             return;
+        }
+        let label = &mut self.label_map[y as usize][x as usize];
+        // 格子已经打开
+        if let GridStatus::Open(num) = label {
+            let mut num = num.clone();
+            self.query_around_grid(x, y).into_iter().for_each(|(x, y)| {
+                if self.is_flag(x, y) {
+                    num -= 1;
+                }
+            });
+            // num等于0时代表周围的雷被玩家用旗子标出来了
+            if num == 0 {
+                self.query_around_grid(x, y).into_iter().for_each(|(x, y)| {
+                    if self.is_flag(x, y) {
+                        return
+                    }
+                    let label = &self.label_map[y as usize][x as usize];
+                    // 只打开还没打开过的格子
+                    if let GridStatus::None = label {
+                        self.open_grid(x, y)
+                    }
+                });
+            }
         }
 
         let mine = self.query_around_mine(x, y);
@@ -69,19 +96,43 @@ impl GameBox {
                 self.open_grid(x, y)
             }
         });
+
+        if self.surplus_grid() == 0 {
+            self.game_win();
+        }
+
+    }
+
+    pub fn flag_grid(&mut self, x: u32, y: u32) {
+        let label = &self.label_map[y as usize][x as usize];
+        // 只有空状态时才能标成旗子
+        if let GridStatus::None = label {
+            if self.flag_map[y as usize][x as usize] == 1 {
+                self.flag_map[y as usize][x as usize] = 0
+            } else {
+                self.flag_map[y as usize][x as usize] = 1;
+            }
+        }
     }
 
     pub fn new_game(&mut self) {
         self.status = GameStatus::Play;
         self.mine_map = self.init_mine();
+        let mut label_map = vec![];
+        let mut flag_map = vec![];
         // 初始化显示地址
-        for y in 0..self.height {
+        for _ in 0..self.height {
             let mut line: Vec<GridStatus> = vec![];
-            for x in 0..self.width {
+            let mut flag_line: Vec<u32> = vec![];
+            for _ in 0..self.width {
                 line.push(GridStatus::None);
+                flag_line.push(0);
             }
-            self.label_map.push(line);
+            label_map.push(line);
+            flag_map.push(flag_line);
         }
+        self.label_map = label_map;
+        self.flag_map = flag_map;
     }
 
     fn game_over(&mut self, x: u32, y: u32) {
@@ -99,17 +150,21 @@ impl GameBox {
                         // 点到了地雷, 游戏结束
                         if is_mine == 1 {
                             self.label_map[y as usize][x as usize] = GridStatus::Mine;
+                            continue;
                         }
                         let mine = self.query_around_mine(x, y);
                         self.label_map[y as usize][x as usize] = GridStatus::Open(mine);
-
-                    },
-                    GridStatus::Mine => {},
-                    GridStatus::OpenMine => {},
-                    GridStatus::Open(_) => {},
+                    }
+                    GridStatus::Mine => {}
+                    GridStatus::OpenMine => {}
+                    GridStatus::Open(_) => {}
                 }
             }
         }
+    }
+
+    fn game_win(&mut self) {
+        self.status = GameStatus::Win;
     }
 
     pub fn query_around_grid(&self, x: u32, y: u32) -> Vec<(u32, u32)> {
@@ -152,6 +207,39 @@ impl GameBox {
             }
         }
         i
+    }
+
+    pub fn is_mine(&self, x: u32, y: u32) -> bool {
+        let is_mine = self.mine_map[y as usize][x as usize];
+        is_mine == 1
+    }
+    pub fn is_flag(&self, x: u32, y: u32) -> bool {
+        let is_flag = self.flag_map[y as usize][x as usize];
+        is_flag == 1
+    }
+
+    pub fn surplus_grid(&self) -> u32 {
+        let mut grid = self.height * self.width - self.mine_max;
+        for y in 0..self.height {
+            for x in 0..self.width {
+                let label = &self.label_map[y as usize][x as usize];
+                if let GridStatus::Open(_) = label {
+                    grid -= 1;
+                }
+            }
+        }
+        grid
+    }
+    pub fn surplus_mine(&self) -> u32 {
+        let mut grid = self.mine_max;
+        for y in 0..self.height {
+            for x in 0..self.width {
+                if self.is_flag(x, y) {
+                    grid -= 1;
+                }
+            }
+        }
+        grid
     }
     // 生成地雷图
     fn init_mine(&self) -> Vec<Vec<u32>> {

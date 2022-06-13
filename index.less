@@ -1,47 +1,126 @@
+@import url('./assets/iconfonts/iconfont.css');
+
 html {
-    background: #000;
+  background: #000;
 }
+
 * {
   box-sizing: border-box;
 }
+
 .gamebox {
-    position: relative;
-    display: flex;
-    flex-wrap: wrap;
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
 }
 
 .grid_is_mine {
-    background-image: url("./assets/炸弹.svg");
-    background-size: contain;
+  // background-image: url("./assets/bomb.svg");
+  // background-size: contain;
+}
+.grid_is_flag {
+  // color: #ee3b3b;
+  // background-image: url("./assets/flag.svg");
+  // background-size: contain;
 }
 
 .grid {
+  width: 26px;
+  height: 26px;
+  border: 1px solid #fff;
+  box-shadow: 0 0 1px #fff, 0 0 1px #fff, 0 0 2px #bc13fe, 0 0 2px #bc13fe, 0 0 2px #bc13fe, inset 0 0 0px #bc13fe;
+  color: #fff;
+  text-align: center;
+  line-height: 24px;
+
+  // box-shadow: 0.1px #fff;
+  &::after {
+    content: '';
+    position: absolute;
+    left: -1px;
+    top: -1px;
     width: 26px;
     height: 26px;
     border: 1px solid #fff;
-    box-shadow: 0 0 1px #fff, 0 0 1px #fff, 0 0 2px #bc13fe, 0 0 2px #bc13fe, 0 0 2px #bc13fe, inset 0 0 0px #bc13fe;
-    color: #fff;
-    text-align: center;
-    line-height: 24px;
-    // box-shadow: 0.1px #fff;
-    &::after {
-      content: '';
-      position: absolute;
-      left: -1px;
-      top: -1px;
-      width: 26px;
-      height: 26px;
-      border: 1px solid #fff;
-      box-sizing: border-box;
-      z-index: 1;
-    }
-    &:hover {
-    //   @include mine_grid_light;
-      z-index: 3;
-    }
+    box-sizing: border-box;
+    z-index: 1;
   }
 
-  p {
-    color: #fff;
-    text-shadow: 0 0 1px #fff, 0 0 1px #fff, 0 0 2px #bc13fe, 0 0 2px #bc13fe, 0 0 2px #bc13fe, inset 0 0 0px #bc13fe;
+  &:hover {
+    //   @include mine_grid_light;
+    z-index: 3;
   }
+}
+
+p {
+  color: #fff;
+  text-shadow: 0 0 1px #fff, 0 0 1px #fff, 0 0 2px #bc13fe, 0 0 2px #bc13fe, 0 0 2px #bc13fe, inset 0 0 0px #bc13fe;
+}
+
+.grid_0 {
+  // box-shadow: 0.1px #fff;
+  &::before {
+    content: '';
+    position: absolute;
+    left: -1px;
+    top: -1px;
+    width: 26px;
+    height: 26px;
+    box-sizing: border-box;
+    z-index: 1;
+
+    background-color: aquamarine;
+  }
+}
+.grid_1 {
+  text-shadow:
+    /* 扩散白光 */
+    0 0 7px #fff, 0 0 10px #fff, 0 0 21px #fff,
+    /* 扩散绿光 */
+    0 0 42px #3777d8, 0 0 82px #3777d8, 0 0 92px #3777d8, 0 0 102px #3777d8, 0 0 151px #3777d8;
+}
+.grid_2 {
+  text-shadow:
+    /* 扩散白光 */
+    0 0 7px #fff, 0 0 10px #fff, 0 0 21px #fff,
+    /* 扩散绿光 */
+    0 0 42px #0fa, 0 0 82px #0fa, 0 0 92px #0fa, 0 0 102px #0fa, 0 0 151px #0fa;
+}
+.grid_3 {
+  text-shadow:
+    /* 扩散白光 */
+    0 0 7px #fff, 0 0 10px #fff, 0 0 21px #fff,
+    /* 扩散绿光 */
+    0 0 42px #0fa, 0 0 82px #0fa, 0 0 92px #0fa, 0 0 102px #0fa, 0 0 151px #0fa;
+}
+.grid_4 {
+  text-shadow:
+    /* 扩散白光 */
+    0 0 7px #fff, 0 0 10px #fff, 0 0 21px #fff,
+    /* 扩散绿光 */
+    0 0 42px #0fa, 0 0 82px #0fa, 0 0 92px #0fa, 0 0 102px #0fa, 0 0 151px #0fa;
+}
+.grid_5 {
+  text-shadow:
+    /* 扩散白光 */
+    0 0 7px #fff, 0 0 10px #fff, 0 0 21px #fff,
+    /* 扩散绿光 */
+    0 0 42px #0fa, 0 0 82px #0fa, 0 0 92px #0fa, 0 0 102px #0fa, 0 0 151px #0fa;
+}
+.grid_6 {
+  text-shadow:
+    /* 扩散白光 */
+    0 0 7px #fff, 0 0 10px #fff, 0 0 21px #fff,
+    /* 扩散绿光 */
+    0 0 42px #0fa, 0 0 82px #0fa, 0 0 92px #0fa, 0 0 102px #0fa, 0 0 151px #0fa;
+}
+.grid_7 {
+  text-shadow:
+    0 0 7px #fff, 0 0 10px #fff, 0 0 21px #fff,
+    0 0 42px #df3c30, 0 0 82px #df3c30, 0 0 92px #df3c30, 0 0 102px #df3c30, 0 0 151px #df3c30;
+}
+.grid_8 {
+  text-shadow:
+    0 0 7px #fff, 0 0 10px #fff, 0 0 21px #fff,
+    0 0 42px #f1a83a, 0 0 82px #f1a83a, 0 0 92px #f1a83a, 0 0 102px #f1a83a, 0 0 151px #f1a83a;
+}

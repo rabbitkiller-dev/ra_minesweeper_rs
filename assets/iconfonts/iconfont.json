@@ -1,0 +1,23 @@
+{
+  "id": "3461781",
+  "name": "霓虹扫雷",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "310118",
+      "name": "flag",
+      "font_class": "flag",
+      "unicode": "e610",
+      "unicode_decimal": 58896
+    },
+    {
+      "icon_id": "1261203",
+      "name": "bomb",
+      "font_class": "bomb",
+      "unicode": "e647",
+      "unicode_decimal": 58951
+    }
+  ]
+}

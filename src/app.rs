@@ -11,7 +11,8 @@ pub struct App {
 }
 
 pub enum Msg {
-   Action(GridAction)
+   Action(GridAction),
+   ReStart
 }
 
 impl Component for App {
@@ -19,7 +20,8 @@ impl Component for App {
     type Properties = ();
 
     fn create(_ctx: &Context<Self>) -> Self {
-        let game_box = GameBox::new(10, 10, 8);
+        let game_box = GameBox::new(12, 15, 25);
+        
         App {
             game_box: Rc::new(RefCell::new(game_box))
         }
@@ -32,12 +34,23 @@ impl Component for App {
                 match action {
                     GridAction::Click(x, y) => {
                         let game_box = self.game_box.clone();
-                        let mut game_box = RefCell::borrow_mut(&game_box);
+                        let mut game_box = game_box.borrow_mut();
+                        if game_box.is_flag(x, y) {
+                            return false;
+                        }
                         game_box.open_grid(x, y);
                     }
-                    GridAction::DbClick(_, _) => todo!(),
-                    GridAction::RightClick(_, _) => todo!(),
+                    GridAction::RightClick(x, y) => {
+                        let game_box = self.game_box.clone();
+                        let mut game_box = game_box.borrow_mut();
+                        game_box.flag_grid(x, y)
+                    },
                 }
+            }
+            Msg::ReStart => {
+                let game_box = self.game_box.clone();
+                let mut game_box = game_box.borrow_mut();
+                game_box.new_game();
             }
         }
         true
@@ -76,7 +89,9 @@ impl Component for App {
         html! {
             <>
                 if let GameStatus::Play = game_box.status {
-                    <p>{ "游戏进行中: 请到出所有不是地雷的格子" }</p>
+                    <p>{ "游戏进行中: 请找出所有不是地雷的格子" }</p>
+                    <p>{ format!("还有{}个格子", game_box.surplus_grid()) }</p>
+                    <p>{ format!("还有{}个地雷", game_box.surplus_mine()) }</p>
                 }
                 if let GameStatus::Win = game_box.status {
                     <p>{ "游戏结束: 胜利" }</p>
@@ -84,6 +99,7 @@ impl Component for App {
                 if let GameStatus::Over = game_box.status {
                     <p>{ "游戏结束: 炸雷了" }</p>
                 }
+                <button onclick={ctx.link().callback(move |_| Msg::ReStart)} >{ "重开" }</button>
                 <div class="gamebox" style={styles}>
                 {
                     grids
